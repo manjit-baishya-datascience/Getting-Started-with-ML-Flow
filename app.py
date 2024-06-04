@@ -17,13 +17,15 @@ import logging
 logging.basicConfig(level=logging.WARN)
 logger = logging.getLogger(__name__)
 
+import dagshub
+dagshub.init(repo_owner='manjitbaishya01', repo_name='Getting-Started-with-ML-Flow', mlflow=True)
+mlflow.set_tracking_uri("https://dagshub.com/manjitbaishya01/Getting-Started-with-ML-Flow.mlflow")
 
 def eval_metrics(actual, pred):
     rmse = np.sqrt(mean_squared_error(actual, pred))
     mae = mean_absolute_error(actual, pred)
     r2 = r2_score(actual, pred)
     return rmse, mae, r2
-
 
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
@@ -71,12 +73,8 @@ if __name__ == "__main__":
         mlflow.log_metric("r2", r2)
         mlflow.log_metric("mae", mae)
 
-        #predictions = lr.predict(train_x)
-        #signature = infer_signature(train_x, predictions)
-
-        ## For Remote server only(DAGShub)
-
-        remote_server_uri="https://dagshub.com/krishnaik06/mlflowexperiments.mlflow"
+        # Set remote server URI (DAGShub)
+        remote_server_uri = "https://dagshub.com/manjitbaishya01/Getting-Started-with-ML-Flow.mlflow"
         mlflow.set_tracking_uri(remote_server_uri)
 
         tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
@@ -84,9 +82,6 @@ if __name__ == "__main__":
         # Model registry does not work with file store
         if tracking_url_type_store != "file":
             # Register the model
-            # There are other ways to use the Model Registry, which depends on the use case,
-            # please refer to the doc for more information:
-            # https://mlflow.org/docs/latest/model-registry.html#api-workflow
             mlflow.sklearn.log_model(
                 lr, "model", registered_model_name="ElasticnetWineModel"
             )
